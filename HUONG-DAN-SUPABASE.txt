@@ -1,0 +1,170 @@
+PHYSICS EZ – NỐI WEB VỚI SUPABASE FREE
+=======================================================================
+
+Web chạy trên GitHub Pages (kho GitHub CÔNG KHAI). Supabase lưu:
+  - bài mô phỏng, câu lệnh mẫu do thầy cô đăng;
+  - số lượt truy cập (khung cuối trang chủ: trái "Số lượng truy cập", phải nút "Đánh giá").
+
+KHÔNG cần tài khoản nào cho giáo viên. Chỉ có MỘT "mật khẩu tải lên":
+  - Bấm nút vàng "Tải lên" -> hiện ô mật khẩu.
+    Sai: báo "Mật khẩu không đúng." và không vào được trang.
+    Đúng: vào trang, thêm / đăng / xóa bài được ngay, không hỏi lại.
+  - Đóng tab trình duyệt hoặc bấm "Đăng xuất" là phải nhập lại.
+  - Mật khẩu chỉ lưu (đã mã hóa) bên trong Supabase, KHÔNG nằm trong file nào của web,
+    nên để kho GitHub công khai vẫn an toàn: xem mã nguồn cũng không thấy mật khẩu,
+    và gọi thẳng máy chủ mà sai mật khẩu thì không đăng / xóa được gì.
+Chưa điền supabase-config.js thì web vẫn chạy như cũ (nội dung chỉ lưu trên máy).
+
+Gồm 2 phần:
+  PHẦN A – THỬ NGHIỆM bằng một tài khoản GitHub mới.
+  PHẦN B – ÁP DỤNG CHÍNH THỨC lên web đang chạy (tranhang754-art.github.io/physics-ez).
+(Tên nút, tên mục trên GitHub / Supabase có thể hơi khác theo thời gian.)
+
+
+=======================================================================
+PHẦN A – THỬ NGHIỆM
+=======================================================================
+
+A1. Tạo tài khoản GitHub mới
+  1. Chuẩn bị một email CHƯA từng dùng cho GitHub (ví dụ một Gmail khác).
+  2. Vào github.com -> Sign up -> nhập email, mật khẩu, tên đăng nhập
+     (ví dụ: physicsez-thu) -> nhập mã xác nhận gửi về email.
+  3. Nếu trình duyệt đang đăng nhập tài khoản GitHub cũ, dùng cửa sổ ẩn danh
+     (Ctrl+Shift+N) hoặc một hồ sơ Chrome khác để khỏi lẫn.
+
+A2. Tạo kho và tải web lên
+  1. Góc trên bên phải bấm dấu + -> New repository.
+  2. Repository name: physics-ez   -> chọn Public -> Create repository.
+  3. Trên trang kho mới, bấm dòng chữ "uploading an existing file".
+  4. Mở thư mục physics-ez (đã giải nén), chọn tất cả (Ctrl+A),
+     BỎ CHỌN thư mục .github (làm riêng ở bước A8), kéo thả vào trang GitHub.
+     Đợi tải xong (img, media hơi lâu) -> bấm Commit changes.
+
+A3. Bật GitHub Pages
+  1. Trong kho physics-ez -> Settings -> Pages.
+  2. Build and deployment -> Source: Deploy from a branch.
+     Branch: main, thư mục: / (root) -> Save.
+  3. Đợi 1-2 phút, tải lại trang Settings -> Pages, sẽ thấy link dạng:
+       https://physicsez-thu.github.io/physics-ez/
+     Mở link: web chạy như cũ (chưa có số lượt truy cập vì chưa nối Supabase).
+
+A4. Tạo dự án Supabase
+  1. Vào supabase.com -> Start your project -> Continue with GitHub
+     -> đăng nhập bằng tài khoản GitHub MỚI -> Authorize.
+  2. New project:
+       - Name: physics-ez
+       - Database Password: đặt mật khẩu mạnh, ghi lại cất đi
+         (đây là mật khẩu quản trị cơ sở dữ liệu, KHÁC mật khẩu tải lên).
+       - Region: Southeast Asia (Singapore)  <- gần Việt Nam nhất
+       - Gói: Free
+  3. Bấm Create new project, đợi 1-2 phút.
+
+A5. Tạo bảng và các chức năng
+  1. Menu trái -> SQL Editor -> New query.
+  2. Mở file supabase-setup.sql bằng Notepad, Ctrl+A, sao chép, dán vào.
+  3. Bấm Run. Thấy "Success. No rows returned" là xong.
+
+A6. Đặt mật khẩu tải lên
+  1. Vẫn ở SQL Editor -> New query, gõ một dòng (thay phần trong dấu nháy
+     bằng mật khẩu cô chọn, ít nhất 6 kí tự, giữ nguyên hai dấu nháy đơn):
+         select private.dat_mat_khau('mat-khau-cua-co');
+  2. Bấm Run. Thấy dòng "Đã đặt mật khẩu tải lên." là xong.
+  Lưu ý:
+    - Gõ thẳng trong Supabase, KHÔNG ghi mật khẩu vào bất kỳ file nào của web.
+    - Không cần tạo tài khoản, không cần vào mục Authentication.
+    - Muốn đổi mật khẩu sau này: chạy lại đúng dòng trên với mật khẩu mới.
+
+A7. Điền địa chỉ và khóa vào supabase-config.js
+  1. Trong Supabase, bấm nút Connect ở đầu trang dự án
+     (hoặc Project Settings -> Data API / API Keys), sao chép:
+       - Project URL: dạng https://abcdxyz.supabase.co
+       - Publishable key: dạng sb_publishable_...
+         (nếu chỉ thấy "anon public" thì dùng khóa đó)
+     TUYỆT ĐỐI KHÔNG dùng "Secret key" hay "service_role".
+  2. Trên GitHub, trong kho physics-ez: bấm vào file supabase-config.js
+     -> biểu tượng bút chì (Edit) -> dán vào giữa hai dấu nháy đơn:
+         url: 'https://abcdxyz.supabase.co',
+         key: 'sb_publishable_...'
+     -> Commit changes. Đợi 1-2 phút để GitHub Pages cập nhật.
+
+A8. Lịch tự động giữ Supabase không "ngủ" (nên làm)
+  Gói Free tạm dừng dự án nếu 7 ngày ít người dùng (ví dụ nghỉ Tết).
+  1. Trong kho physics-ez -> Add file -> Create new file.
+  2. Ô tên file gõ đúng:  .github/workflows/giu-supabase-thuc.yml
+     (gõ dấu / thì GitHub tự tạo thư mục)
+  3. Mở file giu-supabase-thuc.yml (trong thư mục .github\workflows của gói này;
+     thư mục .github bị ẩn thì bật View -> Show -> Hidden items) bằng Notepad,
+     sao chép toàn bộ, dán vào -> Commit changes.
+  4. Tab Actions -> chọn "Giu Supabase thuc" -> Run workflow để chạy thử.
+     Có dấu tích xanh là được. Từ đó cứ 3 ngày nó tự gọi Supabase một lần.
+  Lưu ý: kho công khai mà 60 ngày không có thay đổi nào (ví dụ nghỉ hè), GitHub tự
+  tắt lịch này -> vào tab Actions -> chọn lịch -> Enable workflow.
+
+A9. Danh sách thử (mở link GitHub Pages ở bước A3)
+  [ ] Trang chủ: cuối trang, bên trái "Số lượng truy cập: ...", bên phải nút "Đánh giá".
+  [ ] Bấm "Đánh giá" mở đúng Google Form trong tab mới.
+  [ ] Mở thêm vài trang: số lượt chỉ tăng 1 cho mỗi lần mở web (mỗi phiên trình duyệt).
+  [ ] Bấm nút vàng "Tải lên" -> hiện ô mật khẩu, chưa thấy nội dung trang.
+  [ ] Nhập SAI -> "Mật khẩu không đúng.", không vào được.
+  [ ] Nhập ĐÚNG -> vào trang. Thêm 1 bài mô phỏng (.html, có ảnh bìa) và 1 câu lệnh:
+      không bị hỏi lại mật khẩu.
+  [ ] Trên điện thoại: trang Thí nghiệm mô phỏng gần gũi thấy bài vừa thêm, bấm vào chạy
+      được; trang Trợ lí AI thấy câu lệnh vừa thêm.
+  [ ] Trang Tải lên: bấm "Xóa" ở bài thử -> xác nhận -> bài biến mất khỏi web.
+  [ ] Mở trang Tải lên ở tab mới -> phải nhập lại mật khẩu.
+  [ ] Bấm "Đăng xuất" -> ô mật khẩu hiện lại.
+
+
+=======================================================================
+PHẦN B – ÁP DỤNG CHÍNH THỨC (sau khi thử ổn)
+=======================================================================
+
+B1. Chọn dự án Supabase dùng chính thức (chọn 1)
+  Cách a – Dùng luôn dự án thử:
+    - Xóa các bài thử bằng nút "Xóa" ở trang Tải lên.
+    - SQL Editor -> chạy:  update public.site_stats set visits = 0 where id = 1;
+      (đặt lại số lượt truy cập về 0)
+    - Nên đặt mật khẩu tải lên MỚI (bước A6) cho bản chính thức.
+  Cách b – Tạo dự án mới bằng tài khoản GitHub CHÍNH:
+    - Làm lại A4 -> A6, lấy Project URL và Publishable key mới (A7).
+
+B2. Đưa lên web chính thức
+  1. Mở kho chính thức physics-ez (tài khoản tranhang754-art) trên GitHub.
+  2. Add file -> Upload files -> kéo vào các file:
+       index.html, ez.js, supabase-config.js, quan-ly.html, xem.html,
+       thi-nghiem.html, tro-li-ao.html, lab.html, luc-can-nang.html
+     (img, media không đổi). supabase-config.js phải chứa url, key của dự án ở B1.
+  3. Commit changes, đợi 1-2 phút rồi mở tranhang754-art.github.io/physics-ez.
+  4. Làm lại A8 trong kho chính thức để có lịch giữ Supabase thức.
+  5. Chạy lại danh sách A9 trên web chính thức.
+
+B3. Dọn bản thử (khi đã chạy chính thức ổn)
+  - GitHub (tài khoản mới): kho physics-ez -> Settings -> Delete this repository.
+  - Supabase: nếu dùng Cách b ở B1, xóa dự án thử
+    (Project Settings -> General -> Delete project).
+
+
+=======================================================================
+GHI NHỚ
+=======================================================================
+  - Ai có mật khẩu tải lên đều thêm / xóa được mọi bài đăng qua web. Chỉ đưa cho người
+    tin cậy. Đổi mật khẩu bất cứ lúc nào (bước A6); người đang đăng nhập sẽ phải nhập
+    mật khẩu mới ở lần thao tác tiếp theo.
+  - Chống dò mật khẩu: nhập sai 10 lần trong 15 phút từ cùng một mạng thì mạng đó bị
+    tạm khóa 15 phút. Cả trường dùng chung mạng nên nhắc thầy cô gõ cẩn thận.
+    Cần mở khóa ngay: SQL Editor -> chạy  delete from private.lan_sai;
+  - Dùng máy chung (máy chiếu, máy phòng giáo viên): xong việc bấm "Đăng xuất"
+    hoặc đóng tab, để học sinh không vào được trang Tải lên.
+  - Lượt truy cập: mỗi trình duyệt chỉ được đếm 1 lần trong một phiên mở web.
+    Đặt lại về 0:  update public.site_stats set visits = 0 where id = 1;
+  - File mô phỏng tối đa khoảng 3 MB; ảnh bìa tự thu nhỏ. Bài đăng qua web lưu thẳng
+    trong Supabase (gói Free: 500 MB dữ liệu, 5 GB lượt tải xuống mỗi tháng).
+  - Bài đăng qua Supabase chạy trong khung tách riêng cho an toàn. Nếu bài AI viết
+    có lưu dữ liệu trên máy (ví dụ ảnh học sinh), dữ liệu đó chỉ giữ đến khi tải lại trang.
+  - Xem / gỡ bài ngay trong Supabase: Table Editor -> bai_dang.
+  - Gói Free KHÔNG tự sao lưu. Thỉnh thoảng vào Table Editor -> bai_dang
+    -> Export -> CSV để giữ bản sao.
+  - Nếu trang Tải lên báo "Không kết nối được Supabase": vào supabase.com, mở dự án,
+    nếu thấy Paused thì bấm Restore/Resume. Các bài có sẵn của web vẫn chạy bình thường.
+  - Bài cũ đã đăng qua GitHub (noi-dung.json) vẫn hiện như trước.
+  - Không bao giờ dán Secret key / service_role vào bất kỳ file nào của web.
