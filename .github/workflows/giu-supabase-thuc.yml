@@ -1,0 +1,27 @@
+# Physics EZ – cứ 3 ngày gọi Supabase một lần để dự án Free không bị tạm dừng vì "không có hoạt động".
+# Đọc url và key ngay trong file supabase-config.js, không cần cài đặt gì thêm.
+# Lưu ý: GitHub tự tắt lịch này nếu kho không có thay đổi nào trong 60 ngày (ví dụ nghỉ hè).
+# Khi đó vào tab Actions → chọn "Giu Supabase thuc" → bấm Enable workflow.
+name: Giu Supabase thuc
+
+on:
+  schedule:
+    - cron: "17 1 */3 * *"   # 08:17 sáng giờ Việt Nam, 3 ngày một lần
+  workflow_dispatch:          # cho phép bấm chạy thử bằng tay
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Goi Supabase
+        run: |
+          URL=$(sed -nE "s/^[[:space:]]*url:[[:space:]]*'([^']*)'.*/\1/p" supabase-config.js | head -1)
+          KEY=$(sed -nE "s/^[[:space:]]*key:[[:space:]]*'([^']*)'.*/\1/p" supabase-config.js | head -1)
+          URL="${URL%/}"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "supabase-config.js chua dien url/key - bo qua."; exit 0
+          fi
+          curl -fsS --retry 3 --max-time 30 "$URL/rest/v1/site_stats?select=visits" -H "apikey: $KEY"
+          echo
+          echo "Da goi Supabase thanh cong."
