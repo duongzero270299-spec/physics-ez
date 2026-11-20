@@ -44,7 +44,9 @@
       return (Array.isArray(j.items)?j.items:[]).filter(function(x){return x&&x.id&&x.type})},function(){return []})};
 
   /* ---------- Supabase (chỉ dùng fetch, không cần thư viện) ---------- */
-  var CFG=window.EZ_SUPABASE||{}, SB=String(CFG.url||'').trim().replace(/\/+$/,''), KEY=String(CFG.key||'').trim();
+  var CFG=window.EZ_SUPABASE||{}, KEY=String(CFG.key||'').trim();
+  /* chỉ lấy phần https://xxxx.supabase.co (lỡ dán thừa /rest/v1/ hay đường dẫn khác vẫn chạy) */
+  var SB=(String(CFG.url||'').trim().match(/^https?:\/\/[^\/\s?#]+/i)||[''])[0];
   var CLOUD=/^https?:\/\/[^\s\/]+$/.test(SB)&&KEY.length>20;
   EZ.cloudOn=CLOUD;
   EZ.cloudStatus=CLOUD?'chua':'tat'; /* tat | chua | ok | loi */
@@ -53,8 +55,8 @@
     var to=timeout(10000);
     return fetch(SB+'/rest/v1/'+path,{headers:{apikey:KEY},cache:'no-store',signal:to.signal})
       .then(function(r){clearTimeout(to.t);if(!r.ok)throw new Error('http '+r.status);return r.json()},function(e){clearTimeout(to.t);throw e})}
-  function rpc(fn,args){
-    var to=timeout(60000);
+  function rpc(fn,args,ms){
+    var to=timeout(ms||60000);
     return fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(args||{}),signal:to.signal})
       .then(function(r){clearTimeout(to.t);return r.text().then(function(t){var j=null;try{j=t?JSON.parse(t):null}catch(e){j=t}
         if(!r.ok){var m=(j&&(j.message||j.msg||j.error||j.hint))||('http '+r.status);if(r.status===413)m='413 Payload too large';throw new Error(m)}
@@ -62,14 +64,16 @@
 
   /* Đếm lượt truy cập: mỗi phiên trình duyệt chỉ cộng 1 lần, dù mở bao nhiêu trang */
   var visitP=null;
-  EZ.visit=function(){
+  /* EZ.visit(true): cần con số để hiện (trang chủ). EZ.visit(): chỉ đếm, đã đếm rồi thì không gọi Supabase nữa */
+  EZ.visit=function(show){
     if(!CLOUD)return Promise.resolve(null);
     if(visitP)return visitP;
     var k='physics-ez.visited',done=false;
     try{done=sessionStorage.getItem(k)==='1'}catch(e){}
+    if(done&&!show)return Promise.resolve(null);
     var job=done
       ?rest('site_stats?select=visits&id=eq.1').then(function(r){return r&&r[0]?Number(r[0].visits):null})
-      :rpc('ghi_luot_truy_cap',{}).then(function(n){try{sessionStorage.setItem(k,'1')}catch(e){}return Number(n)});
+      :rpc('ghi_luot_truy_cap',{},10000).then(function(n){try{sessionStorage.setItem(k,'1')}catch(e){}return Number(n)});
     visitP=job.then(function(n){return isFinite(n)?n:null},function(){visitP=null;return null});
     return visitP};
 
