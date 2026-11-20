@@ -6,6 +6,6 @@
    KHÔNG ghi mật khẩu tải lên vào file này: mật khẩu chỉ nhập lúc bấm nút "Tải lên".
    Để trống cả hai thì web chạy như cũ, không dùng Supabase. */
 window.EZ_SUPABASE = {
-  url: 'https://xwvzrfqvuotayevuoxov.supabase.co/rest/v1/',
+  url: 'https://xwvzrfqvuotayevuoxov.supabase.co',
   key: 'sb_publishable_wtpY2SG04VxCL2DAO4a6DQ_pl5nH5Bk'
 };
